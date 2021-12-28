@@ -62,6 +62,14 @@ func Init(path string, ocr ocr.OcrReader) *pdf {
 	return &myPdf
 }
 
+func IsAValidPdf(path string) bool {
+	_, stderr, err := tools.ExecCommandWithOutput("pdfimages", "-list", path)
+	if err != nil || len(stderr) != 0 {
+		return false
+	}
+	return true
+}
+
 func (p pdf) Extract() PdfData {
 	chanText := p.getText()
 	chanInfo := p.getInfo()

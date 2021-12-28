@@ -2,8 +2,10 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
+	"ping/extract-data/image"
 	"ping/extract-data/ocr"
 	"ping/extract-data/pdf"
 	"ping/extract-data/tools"
@@ -61,11 +63,19 @@ func extractHandler(w http.ResponseWriter, r *http.Request) {
 			if HandleError(w, err) {
 				return
 			}
-			myPdf := pdf.Init(filename, ocr.TesseractInit([]string{"fra", "deu", "ita", "eng"}))
 
-			values := myPdf.Extract()
+			if pdf.IsAValidPdf(filename) {
+				myPdf := pdf.Init(filename, ocr.TesseractInit([]string{"fra", "deu", "ita", "eng"}))
+				values := myPdf.Extract()
+				apiResponse.Data = append(apiResponse.Data, values)
+			} else if image.IsAValidImage(filename) {
+				myImage := image.Init(filename, ocr.TesseractInit([]string{"fra", "deu", "ita", "eng"}))
+				values := myImage.Extract()
+				apiResponse.Data = append(apiResponse.Data, values)
+			} else {
+				fmt.Println("unsupported format")
+			}
 
-			apiResponse.Data = append(apiResponse.Data, values)
 		}
 	}
 
