@@ -23,3 +23,12 @@ or
 curl -F upload=@<filename> <url> | jq .
 ```
 
+## Docker
+### Build the image
+```
+docker build . -t ocr
+```
+### Launch a container
+```
+docker run -d -p 8080:8080 ocr
+```
